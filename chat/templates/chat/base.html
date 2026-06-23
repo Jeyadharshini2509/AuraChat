@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Aura{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'chat/style.css' %}">
+</head>
+<body>
+
+  {% if user.is_authenticated %}
+  <header class="topbar">
+    <span class="brand">✦ Aura</span>
+    <form action="{% url 'logout' %}" method="post" class="topbar-right">
+      {% csrf_token %}
+      <span class="username">{{ user.username }}</span>
+      <button type="submit" class="signout-btn">Sign out</button>
+    </form>
+  </header>
+  {% endif %}
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <!-- HTMX: makes parts of the page update without a full reload -->
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+
+  <script>
+    // Pass Django's CSRF token on every HTMX request automatically
+    document.addEventListener('htmx:configRequest', function (evt) {
+      evt.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    });
+
+    function scrollToBottom() {
+      var wrap = document.getElementById('msg-wrap');
+      if (wrap) wrap.scrollTop = wrap.scrollHeight;
+    }
+
+    function initTextarea() {
+      var ta = document.getElementById('msg-input');
+      if (!ta) return;
+      // Auto-resize as the user types
+      ta.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 160) + 'px';
+      });
+      // Enter sends, Shift+Enter adds a new line
+      ta.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          if (this.value.trim()) {
+            document.getElementById('send-btn').click();
+          }
+        }
+      });
+    }
+
+    // ── KEY FIX: show the user bubble IMMEDIATELY when they hit send ──
+    // This fires BEFORE HTMX makes the network request, so the message
+    // appears in the chat right away instead of waiting for Gemini to reply.
+    document.addEventListener('htmx:beforeRequest', function (evt) {
+      var form = document.getElementById('msg-form');
+      if (!form || evt.detail.elt !== form) return;
+
+      var ta = document.getElementById('msg-input');
+      var content = (ta ? ta.value : '').trim();
+      if (!content) return;
+
+      // Build the user bubble and append it to the message list
+      var msgList = document.getElementById('msg-list');
+      if (msgList) {
+        var div = document.createElement('div');
+        div.className = 'msg user';
+        // Escape HTML to prevent XSS, preserve newlines
+        var safe = content
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\n/g, '<br>');
+        div.innerHTML = '<div class="bubble user-bubble">' + safe + '</div>';
+        msgList.appendChild(div);
+      }
+
+      // Clear the textarea straight away
+      if (ta) {
+        ta.value = '';
+        ta.style.height = 'auto';
+      }
+
+      scrollToBottom();
+    });
+
+    // After HTMX swaps the assistant bubble in, scroll to it
+    document.addEventListener('htmx:afterSwap', function () {
+      scrollToBottom();
+    });
+
+    // After hx-boost navigations (switching threads), scroll to bottom
+    document.addEventListener('htmx:afterSettle', function () {
+      scrollToBottom();
+      initTextarea();
+    });
+
+    // On page load
+    document.addEventListener('DOMContentLoaded', function () {
+      scrollToBottom();
+      initTextarea();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,527 @@
+/* ── Reset ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Design tokens ──────────────────────────────────────────────── */
+:root {
+  --bg:          #0A0A0A;
+  --sidebar:     #111111;
+  --surface:     #1A1A1A;
+  --surface2:    #212121;
+  --border:      #252525;
+  --border2:     #2E2E2E;
+  --accent:      #8B5CF6;
+  --accent-soft: rgba(139, 92, 246, 0.12);
+  --accent-glow: rgba(139, 92, 246, 0.25);
+  --text:        #EFEFEF;
+  --text-2:      #999999;
+  --text-3:      #555555;
+  --user-msg:    #8B5CF6;
+  --danger:      #EF4444;
+  --font:        'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:        'SF Mono', 'Fira Code', 'Consolas', monospace;
+  --r:           12px;
+  --topbar:      52px;
+}
+
+/* ── Base ───────────────────────────────────────────────────────── */
+html, body { height: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+}
+
+/* ── Top bar ────────────────────────────────────────────────────── */
+.topbar {
+  height: var(--topbar);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.brand {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.username {
+  font-size: 13px;
+  color: var(--text-2);
+}
+.signout-btn {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font);
+  padding: 5px 13px;
+  border-radius: 7px;
+  transition: color .15s, border-color .15s;
+}
+.signout-btn:hover { color: var(--text); border-color: var(--text-3); }
+
+/* ── Layout ─────────────────────────────────────────────────────── */
+.layout {
+  display: flex;
+  height: calc(100vh - var(--topbar));
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────── */
+.sidebar {
+  width: 252px;
+  flex-shrink: 0;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 8px 16px;
+  overflow-y: auto;
+}
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.new-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--border2);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  transition: background .15s, border-color .15s;
+}
+.new-btn:hover { background: var(--surface); border-color: var(--text-3); }
+
+.thread-list { display: flex; flex-direction: column; gap: 1px; }
+
+.thread {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 8px;
+  padding: 1px 3px 1px 0;
+  transition: background .12s;
+}
+.thread:hover { background: var(--surface); }
+.thread.is-active { background: var(--accent-soft); }
+
+.thread-name {
+  flex: 1;
+  padding: 8px 10px;
+  color: var(--text-2);
+  text-decoration: none;
+  font-size: 13.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color .12s;
+  min-width: 0;
+}
+.thread:hover .thread-name,
+.thread.is-active .thread-name { color: var(--text); }
+
+.del-form { flex-shrink: 0; }
+.del-btn {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 5px 7px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity .12s, color .12s;
+}
+.thread:hover .del-btn { opacity: 1; }
+.del-btn:hover { color: var(--danger); }
+
+.no-threads {
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+  margin-top: 24px;
+}
+
+/* ── Main panel ─────────────────────────────────────────────────── */
+.panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Message scroll area ────────────────────────────────────────── */
+.msg-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 20px 12px;
+  scroll-behavior: smooth;
+}
+.msg-wrap::-webkit-scrollbar { width: 4px; }
+.msg-wrap::-webkit-scrollbar-track { background: transparent; }
+.msg-wrap::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+.msg-list { display: flex; flex-direction: column; gap: 0; }
+
+/* ── Welcome screen ─────────────────────────────────────────────── */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px 40px;
+  gap: 14px;
+}
+.welcome-glyph {
+  font-size: 40px;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.welcome-heading {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.welcome-sub { font-size: 14px; color: var(--text-2); max-width: 320px; }
+
+/* ── Message rows ───────────────────────────────────────────────── */
+.msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 780px;
+  margin: 0 auto 18px;
+  width: 100%;
+}
+.msg.user { flex-direction: row-reverse; }
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── Bubbles ────────────────────────────────────────────────────── */
+.bubble {
+  padding: 11px 16px;
+  border-radius: var(--r);
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: 78%;
+}
+.user-bubble {
+  background: var(--user-msg);
+  color: #fff;
+  border-radius: var(--r) var(--r) 4px var(--r);
+}
+.ai-bubble {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--r) var(--r) var(--r) 4px;
+}
+
+/* ── Markdown inside AI bubbles ─────────────────────────────────── */
+.ai-bubble p { margin-bottom: 10px; }
+.ai-bubble p:last-child { margin-bottom: 0; }
+.ai-bubble h1, .ai-bubble h2, .ai-bubble h3 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 16px 0 6px;
+  color: var(--text);
+}
+.ai-bubble h1 { font-size: 18px; }
+.ai-bubble h2 { font-size: 16px; }
+.ai-bubble h3 { font-size: 15px; }
+.ai-bubble ul, .ai-bubble ol { padding-left: 22px; margin: 8px 0 10px; }
+.ai-bubble li { margin-bottom: 5px; }
+.ai-bubble strong { font-weight: 600; color: #fff; }
+.ai-bubble em { font-style: italic; color: var(--text-2); }
+.ai-bubble a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.ai-bubble blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 4px 14px;
+  color: var(--text-2);
+  margin: 10px 0;
+  font-style: italic;
+}
+.ai-bubble hr { border: none; border-top: 1px solid var(--border2); margin: 14px 0; }
+
+/* Inline code */
+.ai-bubble code {
+  font-family: var(--mono);
+  font-size: 13px;
+  background: rgba(255,255,255,0.07);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: #C4B5FD;
+}
+
+/* Code blocks */
+.ai-bubble pre {
+  background: #0D0D0D;
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  padding: 14px 16px;
+  margin: 12px 0;
+  overflow-x: auto;
+}
+.ai-bubble pre code {
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  color: #E2E8F0;
+  line-height: 1.65;
+}
+
+/* Tables */
+.ai-bubble table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 14px;
+}
+.ai-bubble th, .ai-bubble td {
+  padding: 8px 14px;
+  border: 1px solid var(--border2);
+  text-align: left;
+}
+.ai-bubble th { background: var(--surface2); font-weight: 600; }
+
+/* ── Typing animation ───────────────────────────────────────────── */
+#typing {
+  /* Hidden by default; HTMX adds .htmx-request during the request */
+  opacity: 0;
+  transition: opacity .2s ease;
+  pointer-events: none;
+  max-width: 780px;
+  margin: 0 auto 18px;
+  width: 100%;
+}
+#typing.htmx-request { opacity: 1; }
+
+.typing-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 14px 18px;
+  width: fit-content;
+}
+.typing-dots span {
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: block;
+  animation: dot-bounce 1.3s infinite ease-in-out;
+}
+.typing-dots span:nth-child(2) { animation-delay: .18s; }
+.typing-dots span:nth-child(3) { animation-delay: .36s; }
+
+@keyframes dot-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: .4; }
+  30% { transform: translateY(-8px); opacity: 1; }
+}
+
+/* ── Input bar ──────────────────────────────────────────────────── */
+.input-bar {
+  padding: 14px 20px 18px;
+  border-top: 1px solid var(--border);
+}
+.input-shell {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 10px 10px 10px 16px;
+  transition: border-color .2s, box-shadow .2s;
+  max-width: 780px;
+  margin: 0 auto;
+}
+.input-shell:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+#msg-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 15px;
+  font-family: var(--font);
+  line-height: 1.55;
+  resize: none;
+  max-height: 160px;
+  overflow-y: auto;
+}
+#msg-input::placeholder { color: var(--text-3); }
+
+#send-btn {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, transform .1s, box-shadow .15s;
+}
+#send-btn:hover { background: #7C3AED; box-shadow: 0 2px 12px var(--accent-glow); }
+#send-btn:active { transform: scale(.92); }
+
+.disclaimer {
+  font-size: 11.5px;
+  color: var(--text-3);
+  text-align: center;
+  margin-top: 9px;
+  max-width: 780px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Auth pages (login / signup) ────────────────────────────────── */
+.auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.auth-box {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 36px;
+}
+.auth-logo {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+.auth-box h1 {
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-2);
+  margin-bottom: 28px;
+  letter-spacing: -0.01em;
+}
+.auth-box p {
+  font-size: 14px;
+  color: var(--text-2);
+  text-align: center;
+  margin-top: 22px;
+}
+.auth-box a { color: var(--accent); text-decoration: none; }
+.auth-box a:hover { text-decoration: underline; }
+
+/* Django renders form fields as <p> tags — style them */
+.auth-box > form > p {
+  margin-bottom: 16px;
+  text-align: left;
+}
+.auth-box label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  margin-bottom: 6px;
+}
+.auth-box input[type="text"],
+.auth-box input[type="password"] {
+  display: block;
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 10px 13px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.auth-box input[type="text"]:focus,
+.auth-box input[type="password"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+/* Password help text */
+.auth-box .helptext {
+  display: block;
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 5px;
+  line-height: 1.5;
+}
+/* Validation errors */
+.auth-box .errorlist {
+  list-style: none;
+  color: var(--danger);
+  font-size: 13px;
+  margin-bottom: 14px;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.auth-box button[type="submit"] {
+  width: 100%;
+  margin-top: 6px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 9px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background .15s;
+}
+.auth-box button[type="submit"]:hover { background: #7C3AED; }
