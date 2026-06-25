@@ -7,6 +7,8 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         username = 'admin'
         password = os.environ.get('DJANGO_ADMIN_PASSWORD', 'admin123')
-        User.objects.filter(username=username).delete()
-        User.objects.create_superuser(username, 'admin@example.com', password)
-        self.stdout.write('Superuser created fresh')
+        if not User.objects.filter(username=username).exists():
+            User.objects.create_superuser(username, 'admin@example.com', password)
+            self.stdout.write('Superuser created')
+        else:
+            self.stdout.write('Superuser already exists')
