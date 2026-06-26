@@ -525,3 +525,65 @@ body {
   transition: background .15s;
 }
 .auth-box button[type="submit"]:hover { background: #7C3AED; }
+
+
+/* ── Mobile responsive ───────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Hide sidebar by default on mobile */
+  .sidebar {
+    position: fixed;
+    left: -260px;
+    top: 0;
+    height: 100%;
+    z-index: 300;
+    transition: left .25s ease;
+    padding-top: 60px;
+  }
+
+  /* Show sidebar when toggled */
+  .sidebar.is-open {
+    left: 0;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+  }
+
+  /* Overlay behind open sidebar */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 299;
+  }
+  .sidebar-overlay.is-open { display: block; }
+
+  /* Full width chat panel */
+  .chat-layout { height: calc(100vh - var(--topbar)); }
+  .panel { width: 100%; }
+
+  /* Topbar: add menu button space */
+  .topbar { padding: 0 12px; }
+  .brand { font-size: 14px; }
+
+  /* Menu toggle button */
+  .menu-btn {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+  }
+
+  /* Slightly tighter message area */
+  .messages, .msg-wrap { padding: 16px 12px 8px; }
+  .input-bar { padding: 10px 12px 14px; }
+
+  /* Full width bubbles on mobile */
+  .bubble { max-width: 88%; }
+
+  /* Bigger tap targets */
+  #send-btn { width: 40px; height: 40px; }
+}

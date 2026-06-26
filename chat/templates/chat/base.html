@@ -12,14 +12,38 @@
 <body>
 
   {% if user.is_authenticated %}
-  <header class="topbar">
+  <!-- <header class="topbar">
     <span class="brand">✦ Aura</span>
     <form action="{% url 'logout' %}" method="post" class="topbar-right">
       {% csrf_token %}
       <span class="username">{{ user.username }}</span>
       <button type="submit" class="signout-btn">Sign out</button>
     </form>
-  </header>
+  </header> -->
+  <header class="topbar">
+  {% if user.is_authenticated %}
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="menu-btn" id="menu-btn" aria-label="Toggle menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <span class="brand">✦ Aura</span>
+  </div>
+  <form action="{% url 'logout' %}" method="post" class="topbar-right">
+    {% csrf_token %}
+    <span class="username">{{ user.username }}</span>
+    <button type="submit" class="signout-btn">Sign out</button>
+  </form>
+  {% else %}
+  <span class="brand">✦ Aura</span>
+  {% endif %}
+</header>
+
+<!-- Overlay for mobile sidebar -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
   {% endif %}
 
   <main>{% block content %}{% endblock %}</main>
@@ -56,6 +80,30 @@
         }
       });
     }
+    // Mobile sidebar toggle
+var menuBtn = document.getElementById('menu-btn');
+var sidebar = document.querySelector('.sidebar');
+var overlay = document.getElementById('sidebar-overlay');
+
+function toggleSidebar() {
+  if (!sidebar) return;
+  sidebar.classList.toggle('is-open');
+  overlay.classList.toggle('is-open');
+}
+
+function closeSidebar() {
+  if (!sidebar) return;
+  sidebar.classList.remove('is-open');
+  overlay.classList.remove('is-open');
+}
+
+if (menuBtn) menuBtn.addEventListener('click', toggleSidebar);
+if (overlay) overlay.addEventListener('click', closeSidebar);
+
+// Close sidebar when a thread is clicked on mobile
+document.addEventListener('htmx:beforeRequest', function() {
+  closeSidebar();
+});
 
     // ── KEY FIX: show the user bubble IMMEDIATELY when they hit send ──
     // This fires BEFORE HTMX makes the network request, so the message
