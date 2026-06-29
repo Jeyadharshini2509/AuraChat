@@ -576,6 +576,9 @@ body {
     align-items: center;
     margin-right: 8px;
   }
+  .menu-btn {
+    display: none;
+}
 
   /* Slightly tighter message area */
   .messages, .msg-wrap { padding: 16px 12px 8px; }
