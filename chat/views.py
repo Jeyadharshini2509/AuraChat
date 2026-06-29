@@ -72,9 +72,9 @@ def send_message(request):
     except Exception as exc:
         err = str(exc)
         if "503" in err:
-            reply_text = "⚠️ Gemini is currently overloaded. Please try again in a moment."
+            reply_text = "⚠️ Groq is currently overloaded. Please try again in a moment."
         elif "API_KEY" in err or "api_key" in err.lower():
-            reply_text = "⚠️ Your Gemini API key is missing or invalid. Check your .env file."
+            reply_text = "⚠️ Your Groq API key is missing or invalid. Check your .env file."
         else:
             reply_text = f"⚠️ Something went wrong. Please try again.\n\n_{err}_"
 

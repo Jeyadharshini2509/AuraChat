@@ -12,14 +12,7 @@
 <body>
 
   {% if user.is_authenticated %}
-  <!-- <header class="topbar">
-    <span class="brand">✦ Aura</span>
-    <form action="{% url 'logout' %}" method="post" class="topbar-right">
-      {% csrf_token %}
-      <span class="username">{{ user.username }}</span>
-      <button type="submit" class="signout-btn">Sign out</button>
-    </form>
-  </header> -->
+  
   <header class="topbar">
   {% if user.is_authenticated %}
   <div style="display:flex;align-items:center;gap:8px;">
