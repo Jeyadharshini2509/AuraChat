@@ -525,7 +525,9 @@ body {
   transition: background .15s;
 }
 .auth-box button[type="submit"]:hover { background: #7C3AED; }
-
+.menu-btn {
+    display: none;
+}
 
 /* ── Mobile responsive ───────────────────────────────────── */
 @media (max-width: 768px) {
@@ -576,9 +578,7 @@ body {
     align-items: center;
     margin-right: 8px;
   }
-  .menu-btn {
-    display: none;
-}
+  
 
   /* Slightly tighter message area */
   .messages, .msg-wrap { padding: 16px 12px 8px; }
