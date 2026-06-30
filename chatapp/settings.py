@@ -119,6 +119,3 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# --- Gemini API key (read by chat/gemini_client.py) -----------------------
-
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
